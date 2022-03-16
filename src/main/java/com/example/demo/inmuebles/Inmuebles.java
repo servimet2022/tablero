@@ -24,6 +24,9 @@ public class Inmuebles {
 	@Column(name = "numero")
 	private String numero;
 
+	@Column(name = "alcaldia")
+	private String alcaldia;
+
 	public int getId() {
 		return Id;
 	}
@@ -55,6 +58,16 @@ public class Inmuebles {
 	public void setNumero(String numero) {
 		this.numero = numero;
 	}
+
+	public String getAlcaldia() {
+		return alcaldia;
+	}
+
+	public void setAlcaldia(String alcaldia) {
+		this.alcaldia = alcaldia;
+	}
+	
+	
 	
 	
 
