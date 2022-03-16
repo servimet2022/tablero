@@ -27,4 +27,6 @@ public class InmueblesController {
 		Inmuebles inmueble = impl.getOne(id);
 		return new ResponseEntity<Inmuebles>(inmueble, HttpStatus.OK);
 	}
+	
+//	esta es una prueba
 }
