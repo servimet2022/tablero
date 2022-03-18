@@ -108,7 +108,7 @@ public class InmueblesController {
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
 	
-	@DeleteMapping("/inmuebles")
+	@DeleteMapping("/inmuebles/{id}")
 	public ResponseEntity<?> deleteInmueble(@PathVariable int id){
 		Map<String, Object> response = new HashMap<>();
 		try {
