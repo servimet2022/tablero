@@ -1,4 +1,4 @@
-package com.example.demo.proceso;
+package com.example.demo.infotecnica;
 
 import java.util.List;
 
@@ -9,13 +9,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
-public class ProcesoController {
-
-	@Autowired
-	private ProcesoService impl;
+public class InfoTecnicaController {
 	
-	@GetMapping("/procesos")
-	public List<Proceso> getAll(){
-		return impl.getAll();
+	@Autowired
+	private InfoTecnicaService service;
+	
+	
+	@GetMapping("/info")
+	public List<InfoTecnica> getAll(){
+		return service.getAll();
 	}
+
 }

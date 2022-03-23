@@ -24,11 +24,6 @@ public class InmueblesController {
 	@Autowired
 	private InmueblesServie impl;
 	
-//	@GetMapping("/inmuebles")
-//	public List<Inmuebles> getAll(){
-//		return impl.getAll();
-//	}
-	
 	@GetMapping("/inmuebles")
 	public ResponseEntity<?> getAll(){
 		

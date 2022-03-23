@@ -11,8 +11,6 @@ public class ProcesoServiceImpl implements ProcesoService{
 	@Autowired
 	private ProcesoRepo irepo;
 	
-	
-
 	@Override
 	public List<Proceso> getAll() {
 		return irepo.findAll();

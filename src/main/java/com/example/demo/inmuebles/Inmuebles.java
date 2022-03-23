@@ -10,7 +10,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
+import com.example.demo.infotecnica.InfoTecnica;
+import com.example.demo.juridico.ProcesoJuridico;
 import com.example.demo.proceso.Proceso;
+import com.example.demo.unidades.UnidadesPrivativas;
 
 @Entity
 @Table(name = "inmuebles")
@@ -32,17 +35,20 @@ public class Inmuebles {
 	@Column(name = "alcaldia")
 	private String alcaldia;
 	
-	@Column(name = "idinfotecnica")
-	private int idinfotecnica;
-	
-	@Column(name = "idprocesojuridico")
-	private int idprocesojuridico;
-	
-	@Column(name = "idredensificacion")
-	private int idredensificacion;
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "idinfo_tecnica", referencedColumnName = "id")
+	private InfoTecnica idinfotecnica;
 	
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "idprocesoobra", referencedColumnName = "id")
+	@JoinColumn(name = "idproceso_juridico", referencedColumnName = "id")
+	private ProcesoJuridico idprocesojuridico;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "idunidades_privativas", referencedColumnName = "id")
+	private UnidadesPrivativas unidades;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "idproceso_obra", referencedColumnName = "id")
 	private Proceso idprocesoobra;
 
 	public int getId() {
@@ -85,28 +91,28 @@ public class Inmuebles {
 		this.alcaldia = alcaldia;
 	}
 
-	public int getIdinfotecnica() {
+	public InfoTecnica getIdinfotecnica() {
 		return idinfotecnica;
 	}
 
-	public void setIdinfotecnica(int idinfotecnica) {
+	public void setIdinfotecnica(InfoTecnica idinfotecnica) {
 		this.idinfotecnica = idinfotecnica;
 	}
 
-	public int getIdprocesojuridico() {
+	public ProcesoJuridico getIdprocesojuridico() {
 		return idprocesojuridico;
 	}
 
-	public void setIdprocesojuridico(int idprocesojuridico) {
+	public void setIdprocesojuridico(ProcesoJuridico idprocesojuridico) {
 		this.idprocesojuridico = idprocesojuridico;
 	}
 
-	public int getIdredensificacion() {
-		return idredensificacion;
+	public UnidadesPrivativas getUnidades() {
+		return unidades;
 	}
 
-	public void setIdredensificacion(int idredensificacion) {
-		this.idredensificacion = idredensificacion;
+	public void setUnidades(UnidadesPrivativas unidades) {
+		this.unidades = unidades;
 	}
 
 	public Proceso getIdprocesoobra() {
@@ -116,8 +122,8 @@ public class Inmuebles {
 	public void setIdprocesoobra(Proceso idprocesoobra) {
 		this.idprocesoobra = idprocesoobra;
 	}
-	
-	
+
+		
 	
 	
 }
