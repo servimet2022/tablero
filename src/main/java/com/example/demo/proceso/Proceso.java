@@ -24,6 +24,17 @@ public class Proceso{
 	
 	@Column(name = "avance")
 	private int avance;
+	
+	@Column(name = "archivo")
+	private String archivo;	
+
+	public String getArchivo() {
+		return archivo;
+	}
+
+	public void setArchivo(String archivo) {
+		this.archivo = archivo;
+	}
 
 	public String getInicio() {
 		return inicio;

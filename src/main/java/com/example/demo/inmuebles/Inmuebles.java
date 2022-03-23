@@ -123,6 +123,13 @@ public class Inmuebles {
 		this.idprocesoobra = idprocesoobra;
 	}
 
+	@Override
+	public String toString() {
+		return "Inmuebles [Id=" + Id + ", grupo=" + grupo + ", calle=" + calle + ", numero=" + numero + ", alcaldia="
+				+ alcaldia + ", idinfotecnica=" + idinfotecnica + ", idprocesojuridico=" + idprocesojuridico
+				+ ", unidades=" + unidades + ", idprocesoobra=" + idprocesoobra + "]";
+	}
+
 		
 	
 	

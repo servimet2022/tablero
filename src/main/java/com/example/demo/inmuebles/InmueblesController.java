@@ -66,10 +66,7 @@ public class InmueblesController {
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
 	}
 	
-	
-	
-	
-	
+
 	@PostMapping("/inmuebles")
 	public ResponseEntity<?> saveInmueble(@RequestBody Inmuebles inmueble) {
 		
@@ -102,6 +99,7 @@ public class InmueblesController {
 		response.put("inmueble", inmuebleUpdate);
 		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
 	}
+	
 	
 	@DeleteMapping("/inmuebles/{id}")
 	public ResponseEntity<?> deleteInmueble(@PathVariable int id){
