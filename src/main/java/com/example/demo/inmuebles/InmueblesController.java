@@ -1,13 +1,20 @@
 package com.example.demo.inmuebles;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -68,10 +75,25 @@ public class InmueblesController {
 	
 
 	@PostMapping("/inmuebles")
-	public ResponseEntity<?> saveInmueble(@RequestBody Inmuebles inmueble) {
+	public ResponseEntity<?> saveInmueble(@Valid @RequestBody Inmuebles inmueble, BindingResult result) {
 		
 		Inmuebles inmueblenew = null;
 		Map<String, Object> response = new HashMap<>();
+		
+		
+		if (result.hasErrors()) {
+			
+			List<String> errores = result.getFieldErrors()
+								   .stream()
+								   .map( err -> "El campo: '"+err.getField()+"' "+err.getDefaultMessage())
+								   .collect(Collectors.toList());
+			
+			
+			response.put("errors", errores);
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+		}
+		
+		
 		try {
 			inmueblenew = impl.save(inmueble);		
 		} catch (DataAccessException e) {
@@ -86,9 +108,25 @@ public class InmueblesController {
 	
 	
 	@PutMapping("/inmuebles")
-	public ResponseEntity<?> update(@RequestBody Inmuebles inmueble) {
+	public ResponseEntity<?> update(@Valid @RequestBody Inmuebles inmueble, BindingResult result) {
 		Inmuebles inmuebleUpdate = null;		
 		Map<String, Object> response = new HashMap<>();
+		
+		
+		if (result.hasErrors()) {
+			
+			List<String> errores = result.getFieldErrors()
+								   .stream()
+								   .map( err -> "El campo: '"+err.getField()+"' "+err.getDefaultMessage())
+								   .collect(Collectors.toList());
+			
+			
+			response.put("errors", errores);
+			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+		}
+		
+		
+		
 		try {
 			inmuebleUpdate = impl.save(inmueble);		
 		} catch (DataAccessException e) {

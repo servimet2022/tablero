@@ -1,5 +1,6 @@
 package com.example.demo.infotecnica;
 
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,8 +10,8 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "infotecnica")
-public class InfoTecnica {
-	
+public class InfoTecnica{
+
 	@Id
 	@GeneratedValue( strategy = GenerationType.IDENTITY)
 	private int id;
