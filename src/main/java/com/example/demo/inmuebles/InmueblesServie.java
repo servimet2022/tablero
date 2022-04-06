@@ -1,17 +1,28 @@
 package com.example.demo.inmuebles;
 
-import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 
 public interface InmueblesServie {
 	
-	public List<Inmuebles> getAll();
 	
 	public Inmuebles save(Inmuebles inmueble);
 	
-	public Inmuebles getOne(int id);
+	public Inmuebles getOne(int id);;
 	
-	public void delete(int id); 
+	
+//	Estas son pruebas
+	
+	public ResponseEntity<?> obtenerTodos();
+	
+	public ResponseEntity<?> obtenerUno(int id);
+	
+	public ResponseEntity<?> guardarInmueble(Inmuebles inmueble, BindingResult result);   
 
+	public ResponseEntity<?> actualizar(Inmuebles inmuebleUpdate, BindingResult result);
+	
+	public ResponseEntity<?> eliminarInmueble(int id);
+	
+	public ResponseEntity<?> searchInmuebles(String search);
 }

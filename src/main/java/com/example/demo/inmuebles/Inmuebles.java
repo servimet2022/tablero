@@ -1,5 +1,7 @@
 package com.example.demo.inmuebles;
 
+import java.io.Serializable;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,44 +23,53 @@ import com.example.demo.unidades.UnidadesPrivativas;
 
 @Entity
 @Table(name = "inmuebles")
-public class Inmuebles{
+public class Inmuebles implements Serializable{
+
+	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue( strategy = GenerationType.IDENTITY)
 	private int Id;
 	
-	@NotNull(message = "no puede estar vació")
-	@Size(min = 1, max = 1, message = "debe contener información")
+	@NotNull(message = "no debe ser vació")
+	@Size(min = 1, max = 1, message = "debe indicar un grupo valido")
 	@Column(name = "grupo")
 	private String grupo;
 	
-	@NotNull
+	@NotNull(message = "no debe ser vació")
 	@Size(min = 2, max = 100)
 	@Column(name = "calle")
 	private String calle;
 	
-	@NotNull
+	@NotNull(message = "no debe ser vació")
 	@Size(min = 1, max = 10)
 	@Column(name = "numero")
 	private String numero;
 
-	@NotNull
+	@NotNull(message = "no debe ser vació")
 	@Size(min = 1, max = 2)
 	@Column(name = "alcaldia")
 	private String alcaldia;
+
+	@Column(name = "archivo")
+	private String archivo;
 	
+	@NotNull(message = "no debe ser vació")
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "idinfo_tecnica", referencedColumnName = "id")
 	private InfoTecnica idinfotecnica;
 	
+	@NotNull(message = "no debe ser vació")
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "idproceso_juridico", referencedColumnName = "id")
 	private ProcesoJuridico idprocesojuridico;
 	
+	@NotNull(message = "no debe ser vació")
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "idunidades_privativas", referencedColumnName = "id")
-	private UnidadesPrivativas unidades;
+	private UnidadesPrivativas idunidades;
 	
+	@NotNull(message = "no debe ser vació")
 	@OneToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "idproceso_obra", referencedColumnName = "id")
 	private Proceso idprocesoobra;
@@ -102,7 +113,7 @@ public class Inmuebles{
 	public void setAlcaldia(String alcaldia) {
 		this.alcaldia = alcaldia;
 	}
-
+	
 	public InfoTecnica getIdinfotecnica() {
 		return idinfotecnica;
 	}
@@ -119,12 +130,12 @@ public class Inmuebles{
 		this.idprocesojuridico = idprocesojuridico;
 	}
 
-	public UnidadesPrivativas getUnidades() {
-		return unidades;
+	public UnidadesPrivativas getIdunidades() {
+		return idunidades;
 	}
 
-	public void setUnidades(UnidadesPrivativas unidades) {
-		this.unidades = unidades;
+	public void setIdunidades(UnidadesPrivativas idunidades) {
+		this.idunidades = idunidades;
 	}
 
 	public Proceso getIdprocesoobra() {
@@ -135,12 +146,22 @@ public class Inmuebles{
 		this.idprocesoobra = idprocesoobra;
 	}
 
+	public String getArchivo() {
+		return archivo;
+	}
+
+	public void setArchivo(String archivo) {
+		this.archivo = archivo;
+	}
+
 	@Override
 	public String toString() {
 		return "Inmuebles [Id=" + Id + ", grupo=" + grupo + ", calle=" + calle + ", numero=" + numero + ", alcaldia="
-				+ alcaldia + ", idinfotecnica=" + idinfotecnica + ", idprocesojuridico=" + idprocesojuridico
-				+ ", unidades=" + unidades + ", idprocesoobra=" + idprocesoobra + "]";
+				+ alcaldia + ", archivo=" + archivo + ", idinfotecnica=" + idinfotecnica + ", idprocesojuridico="
+				+ idprocesojuridico + ", idunidades=" + idunidades + ", idprocesoobra=" + idprocesoobra + "]";
 	}
+
+	
 
 		
 	
