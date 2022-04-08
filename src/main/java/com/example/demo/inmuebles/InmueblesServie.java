@@ -3,6 +3,7 @@ package com.example.demo.inmuebles;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface InmueblesServie {
 	
@@ -25,4 +26,6 @@ public interface InmueblesServie {
 	public ResponseEntity<?> eliminarInmueble(int id);
 	
 	public ResponseEntity<?> searchInmuebles(String search);
+	
+	public ResponseEntity<?> uploadImg(MultipartFile archivo, int id);
 }

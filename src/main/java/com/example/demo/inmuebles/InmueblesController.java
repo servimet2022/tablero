@@ -1,18 +1,8 @@
 package com.example.demo.inmuebles;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -67,34 +57,8 @@ public class InmueblesController {
 	
 	
 	@PostMapping("/inmuebles/upload")
-	public void upload(@RequestParam("archivo") MultipartFile archivo, @RequestParam("id") int id){
-		Map<String, Object> response = new HashMap<>();
-		Inmuebles inmueble = impl.getOne(id);		
-		String nombreArchivoAnterior = inmueble.getArchivo();
-		if (nombreArchivoAnterior != null && nombreArchivoAnterior.length() >0){
-			
-			Path rutaArchivoAnterior = Paths.get("uploads").resolve(nombreArchivoAnterior).toAbsolutePath();
-			File archivoAnterior = rutaArchivoAnterior.toFile();
-			
-			if (archivoAnterior.exists() && archivoAnterior.canRead()) {
-				archivoAnterior.delete();
-			}
-		}
-		
-		if(!archivo.isEmpty()) {
-			System.out.println("entro aqui");
-			String nombreArchivo = id+"_"+ archivo.getOriginalFilename().replace(" ", " ");
-			Path rutaArchivo = Paths.get("uploads").resolve(nombreArchivo).toAbsolutePath();
-			
-			try {
-				Files.copy(archivo.getInputStream(), rutaArchivo);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		inmueble.setArchivo(nombreArchivo);
-		impl.save(inmueble);
-		
-		}
+	public ResponseEntity<?> upload(@RequestParam("archivo") MultipartFile archivo, @RequestParam("id") int id){
+		return impl.uploadImg(archivo, id);
 	}
 	
 	

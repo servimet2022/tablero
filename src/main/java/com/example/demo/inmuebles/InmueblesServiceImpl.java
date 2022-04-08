@@ -3,7 +3,12 @@ package com.example.demo.inmuebles;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
+import javax.persistence.EntityNotFoundException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -11,26 +16,32 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.util.ValidationEntity;
 
 @Service
 public class InmueblesServiceImpl implements InmueblesServie{
 	
+	private final Logger log = LoggerFactory.getLogger(InmueblesServiceImpl.class);
+	
+	private final static String NOMBRE_CARPETA = "uploads";
+	
 	@Autowired
 	private InmueblesRepo irepo;
 	
-	Map<String, Object> response = null;
 	Inmuebles inmueble = null;
 
 
 	@Override
 	public Inmuebles save(Inmuebles inmueble) {
+		log.info("Se guardo el inmueble sin response Entity con id: "+inmueble.getId());
 		return irepo.save(inmueble);
 	}
 
 	@Override
 	public Inmuebles getOne(int id) {
+		log.info("Se obtiene solo un inmueble con id: "+id);
 		return irepo.findById(id).get();
 	}
 		
@@ -38,116 +49,115 @@ public class InmueblesServiceImpl implements InmueblesServie{
 	@Override
 	@Transactional(readOnly = true)
 	public ResponseEntity<?> obtenerTodos(){
-		response = new HashMap<>();
 		List<Inmuebles> inmuebles = null;
 		try {
 			inmuebles = irepo.findAll();
 		} catch (Exception e) {
-			response.put("respuesta", "Error al obtener los inmuebles de la base de datos");
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			return ValidationEntity.messageErrorInternalServer("Error al obtener todos los inmuebles de la base de datos");
 		}
-		response.put("respuesta", "Se obtienen los inmuebles");
-		response.put("inmueble", inmuebles);
-		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+		return ValidationEntity.messageOkList("Se obtienen los inmuebles", inmuebles);
 	}
 	
 	
 	@Override
 	@Transactional(readOnly = true)
 	public ResponseEntity<?> obtenerUno(int id){
-		response = new HashMap<>();
+		Map<String, Object> response = new HashMap<>();
 		inmueble = new Inmuebles();
 		
 		try {
 			inmueble = irepo.findById(id).orElse(null);
+			log.info("Se obtiene el Inmueble con response");
 		}catch(DataAccessException e){
-			response.put("respuesta", "Error al realizar la consulta a la base de datos");
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			return ValidationEntity.messageErrorInternalServer("Error al obtener el inmueble con id: "+id+" de la base de datos");
 		}
 		
 		if (inmueble == null) {
+			log.info("El inmueble es null");
 			response.put("respuesta", "El inmueble con Id: ".concat(Integer.toString(id).concat(" no existe en la base de datos!")));
 			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
-		} 
-		response.put("respuesta", "Se obtiene el inmueble");
-		response.put("inmueble", inmueble);
-		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+		}
+		
+		return ValidationEntity.messageOk("Se obtiene el inmueble", inmueble);
 	}
 
 	
 	@Override
 	public ResponseEntity<?> guardarInmueble(Inmuebles inmueblenew, BindingResult result){
 		inmueble = new Inmuebles();
-		response = new HashMap<>();
-		
 		if(result.hasErrors()) {
-			return new ResponseEntity<Map<String, Object>>(
-					ValidationEntity.validationInmueble(result)
-					, HttpStatus.BAD_REQUEST);
+			return ValidationEntity.validationInmueble(result,"Aparecen errores al validar y guardar inmueble" );
 		}
 		try {
-			inmueble = irepo.save(inmueblenew);		
+			inmueble = irepo.save(inmueblenew);	
+			log.info("Se guarda sin errores de validación el inmueble");
 		} catch (DataAccessException e) {
-			response.put("respuesta", "Error al guardar el inmueble en la base de datos");
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			return ValidationEntity.messageErrorInternalServer("Error al guardar el inmueble en la base de datos");
 		}
-		response.put("respuesta", "El inmueble ha sido creado");
-		response.put("inmueble", inmueble);
-		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+		return ValidationEntity.messageOk("El inmueble ha sido creado", inmueble);
 		
 	}
 	
 	@Override
 	public ResponseEntity<?> actualizar(Inmuebles inmuebleUpdate, BindingResult result){
-		inmueble = new Inmuebles();
-		response = new HashMap<>();
-		
+		inmueble = new Inmuebles();		
 		if(result.hasErrors()) {
-			return new ResponseEntity<Map<String, Object>>(
-					ValidationEntity.validationInmueble(result)
-					, HttpStatus.BAD_REQUEST);
+			return ValidationEntity.validationInmueble(result,"Errores al actualizar el inmueble");
 		}
 		
 		try {
-			inmueble = irepo.save(inmuebleUpdate);		
+			inmueble = irepo.save(inmuebleUpdate);	
+			log.info("Se actualiza sin errores el inmueble");
 		} catch (DataAccessException e) {
-			response.put("respuesta", "Error al actualizar el inmueble en la base de datos");
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			return ValidationEntity.messageErrorInternalServer("Error al actualizar el inmueble en la base de datos");
 		}
-		response.put("respuesta", "El inmueble se actualizo");
-		response.put("inmueble", inmueble);
-		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+		return ValidationEntity.messageOk("El inmueble se actualizo", inmueble);
 	
 	}
 
 	@Override
-	public ResponseEntity<?> eliminarInmueble(int id){
-		response = new HashMap<>();
+	public ResponseEntity<?> eliminarInmueble(int id){		
 		try {
-			irepo.deleteById(id);
-		}catch (DataAccessException e) {
-			response.put("respuesta", "Error al eliminar el inmueble de la base de datos");
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			Inmuebles inmueble = irepo.findById(id).get(); 
+			ValidationEntity.deleteArchivo(NOMBRE_CARPETA, inmueble.getArchivo());
+			log.info("Se elimino archivo del inmueble: "+inmueble.getId());
+			irepo.delete(inmueble);
+		}catch (NoSuchElementException e) {
+			log.info("Error el eliminar el inmueble: "+id+" "+e.getMessage());
+			return ValidationEntity.messageErrorInternalServer("Error al eliminar el inmueble de la base de datos");
 		}
-		response.put("respuesta", "El inmueble ha sido eliminado");
-		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+		return ValidationEntity.messageOk("El inmueble ha sido eliminado", inmueble);
 		
 	}
+	
+	
+	@Override
+	public ResponseEntity<?> uploadImg(MultipartFile archivo, int id){
+		try {
+			Inmuebles inmueble = irepo.getById(id);			
+			ValidationEntity.deleteArchivo(NOMBRE_CARPETA, inmueble.getArchivo());
+			if(!archivo.isEmpty()) {
+				inmueble.setArchivo(ValidationEntity.chargeArchivo(archivo, "uploads", id));
+				irepo.save(inmueble);
+			}
+		} catch (EntityNotFoundException e) {
+			return ValidationEntity.messageErrorInternalServer("Error al obtener el inmueble de la base de datos");
+		}
+		return ValidationEntity.messageOk("El archivo se cargo con éxito", inmueble);
+	}
+	
 	
 	@Override
 	@Transactional(readOnly = false)
 	public ResponseEntity<?> searchInmuebles(String busqueda){
-		response = new HashMap<>();
 		List<Inmuebles> inmuebles = null;
 		try {
 			inmuebles = irepo.filter(busqueda);
 		} catch (DataAccessException e) {
-			response.put("respuesta", "Error al obtener los inmuebles de la base de datos");
-			return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			log.info("Error al hacer el filter: "+e.getMessage());
+			return ValidationEntity.messageErrorInternalServer("Error al obtener los inmuebles de la base de datos");
 		}
-		response.put("respuesta", "Se obtienen los inmuebles de busqueda");
-		response.put("inmueble", inmuebles);
-		return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+		return ValidationEntity.messageOkList("Se obtienen los inmuebles de busqueda", inmuebles);
 	}
 
 
