@@ -1,20 +1,13 @@
 package com.example.demo.inmuebles;
 
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 
+
 public interface InmueblesServie {
 	
-	
-	public Inmuebles save(Inmuebles inmueble);
-	
-	public Inmuebles getOne(int id);;
-	
-	
 //	Estas son pruebas
-	
 	public ResponseEntity<?> obtenerTodos();
 	
 	public ResponseEntity<?> obtenerUno(int id);
@@ -28,4 +21,6 @@ public interface InmueblesServie {
 	public ResponseEntity<?> searchInmuebles(String search);
 	
 	public ResponseEntity<?> uploadImg(MultipartFile archivo, int id);
+	
+	public ResponseEntity<?> showArchivo(String nombreArchivo);
 }

@@ -4,14 +4,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import javax.servlet.http.HttpServletResponse;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -25,6 +32,13 @@ public class ValidationEntity {
 	private final static Logger log = LoggerFactory.getLogger(ValidationEntity.class);
 	
 	static Map<String, Object> response = null;
+	
+	private final static String contentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+	
+	private final static String contentDisposition = "Content-Disposition";
+	
+	
+	
 	
 //	Este método valida si la entidad no tiene errores
 	public static ResponseEntity<?> validationInmueble(BindingResult result, String mensaje){
@@ -67,6 +81,30 @@ public class ValidationEntity {
 			}
 			return nombreArchivo;
 	}
+	
+	
+	public static Resource verArchivo(String nameFolder,String nombreArchivo){
+		Path rutaArchivoAnterior = Paths.get(nameFolder).resolve(nombreArchivo).toAbsolutePath();
+		Resource recurso = null;
+		
+		try {
+			recurso = new UrlResource(rutaArchivoAnterior.toUri());
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		
+		if(!recurso.exists() && !recurso.isReadable()) {
+			throw new RuntimeException("No se pudo cargar la imagen: "+ nombreArchivo);
+		}
+		
+		return recurso;
+	}
+	
+	
+	
+	
+	
+	
 
 //	Este método manda mensaje cuando existio un error al momento de consultar, guardar, eliminar o actualizar en la base
 	public static ResponseEntity<?> messageErrorInternalServer(String mensajeMap){
@@ -96,6 +134,13 @@ public class ValidationEntity {
 		
 	}
 	
+//	Esté método genera el excel para la descarga
+	public static void descargaExcel(HttpServletResponse response, List<Inmuebles> lista) throws IOException {
+		response.setContentType(contentType);
+        response.setHeader(contentDisposition, "attachment; filename=lista_inmuebles.xlsx");
+		 InmuebleExcel excel = new InmuebleExcel(lista);
+		 excel.excelExportar(response);
+	}
 	
 	
 }

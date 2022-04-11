@@ -10,7 +10,9 @@ import javax.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.dao.DataAccessException;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,8 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.example.demo.util.ValidationEntity;
 
+
 @Service
-public class InmueblesServiceImpl implements InmueblesServie{
+public class InmueblesServiceImpl implements InmueblesServie, InmuebleServiceExcel{
 	
 	private final Logger log = LoggerFactory.getLogger(InmueblesServiceImpl.class);
 	
@@ -31,20 +34,7 @@ public class InmueblesServiceImpl implements InmueblesServie{
 	private InmueblesRepo irepo;
 	
 	Inmuebles inmueble = null;
-
-
-	@Override
-	public Inmuebles save(Inmuebles inmueble) {
-		log.info("Se guardo el inmueble sin response Entity con id: "+inmueble.getId());
-		return irepo.save(inmueble);
-	}
-
-	@Override
-	public Inmuebles getOne(int id) {
-		log.info("Se obtiene solo un inmueble con id: "+id);
-		return irepo.findById(id).get();
-	}
-		
+	
 
 	@Override
 	@Transactional(readOnly = true)
@@ -145,6 +135,20 @@ public class InmueblesServiceImpl implements InmueblesServie{
 		}
 		return ValidationEntity.messageOk("El archivo se cargo con éxito", inmueble);
 	}
+
+
+	
+	
+	@Override
+	public ResponseEntity<Resource> showArchivo(String nombreArchivo) {
+		Resource recurso = ValidationEntity.verArchivo("uploads", nombreArchivo);
+		String nombre = recurso.getFilename().substring((recurso.getFilename().indexOf("_") + 1),recurso.getFilename().length());
+		HttpHeaders cabecera = new HttpHeaders();
+		cabecera.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\""+ nombre +"\"");
+		
+		return new ResponseEntity<Resource>(recurso, cabecera, HttpStatus.OK);
+
+	}
 	
 	
 	@Override
@@ -159,6 +163,23 @@ public class InmueblesServiceImpl implements InmueblesServie{
 		}
 		return ValidationEntity.messageOkList("Se obtienen los inmuebles de busqueda", inmuebles);
 	}
+	
+	
+	
+	@Override
+	@Transactional(readOnly = false)
+	public List<Inmuebles> filtrarExcel(String busqueda){
+		return irepo.filter(busqueda);
+	}
+	
+	
+	@Override
+	@Transactional(readOnly = false)
+	public List<Inmuebles> allExcel(){
+		return irepo.findAll();
+	}
+
+	
 
 
 }
